@@ -11,4 +11,8 @@
     <ProjectReference Include="..\Ametrin.Plist\Ametrin.Plist.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="TUnit" Version="0.24.0" />
+  </ItemGroup>
+
 </Project>

@@ -10,23 +10,25 @@ public sealed class PlistDocument
     /// <summary>
     /// the raw binary plist data 
     /// </summary>
-    internal ImmutableArray<byte> data { get; }
+    internal ImmutableArray<byte> BinaryData { get; }
 
     /// <summary>
-    /// element n is the memory locaton in <see cref="data"/> of the n-th object
+    /// the n-th element is the memory locaton of the n-th object in <see cref="BinaryData"/>
     /// </summary>
-    internal ImmutableArray<int> offsetTable { get; }
+    internal ImmutableArray<int> OffsetTable { get; }
 
     internal PlistTrailer Trailer { get; }
 
     internal PlistDocument(ImmutableArray<byte> data, ImmutableArray<int> offsetTable, PlistTrailer trailer)
     {
-        this.data = data;
-        this.offsetTable = offsetTable;
+        this.BinaryData = data;
+        OffsetTable = offsetTable;
         Trailer = trailer;
     }
 
     public PlistObjectReader GetRoot() => GetObject(Trailer.RootIndex);
+
+    public object? ParseToObject() => GetRoot().ParseToObject();
 
     internal PlistObjectReader GetObject(int objectIndex)
     {
@@ -35,7 +37,7 @@ public sealed class PlistDocument
     }
 
     private PlistObjectInfo GetObjectInfo(int objectIndex)
-        => GetObjectInfo(data.AsSpan(offsetTable[objectIndex]..));
+        => GetObjectInfo(BinaryData.AsSpan(OffsetTable[objectIndex]..));
 
     /// <param name="data">the binary data starting the the object marker</param>
     /// <returns>the object type, the count of the additional data and the size of the marker in bytes</returns>
@@ -52,7 +54,7 @@ public sealed class PlistDocument
             (0x0, 0x0) => new(PlistObjectType.Null, 0, 1),
             (0x0, 0x8) => new(PlistObjectType.False, 0, 1),
             (0x0, 0x9) => new(PlistObjectType.True, 0, 1),
-            (0x1, >= 0 and < 8) => new(PlistObjectType.VarInt, 1 << objInfo, 1),
+            (0x1, >= 0 and < 4) => new(PlistObjectType.VarInt, 1 << objInfo, 1),
             (0x2, 2 or 3) => new(PlistObjectType.VarReal, 1 << objInfo, 1),
             (0x3, _) => new(PlistObjectType.Date, 8, 1),
             (0x4, _) => new(PlistObjectType.ByteArray, ReadContainerCount(objInfo, data, out var markerSize), markerSize),

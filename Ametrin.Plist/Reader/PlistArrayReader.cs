@@ -11,12 +11,12 @@ public readonly struct PlistArrayReader : IEnumerable<PlistObjectReader>
 
     internal PlistArrayReader(PlistDocument document, int index, PlistObjectInfo info)
     {
-        if (info.Type is not PlistObjectType.Array) throw new InvalidOperationException($"Expected an Array, got a {info.Type}");
+        if (info.Type is not PlistObjectType.Array and not PlistObjectType.Set) throw new InvalidOperationException($"Expected an Array or Set, got a {info.Type}");
 
         Debug.Assert(document.Trailer.ObjectPointerSize <= 4);
 
         _elements = new PlistObjectReader[info.ContainerCount];
-        var data = document.data.AsSpan((document.offsetTable[index] + info.MarkerSize)..);
+        var data = document.BinaryData.AsSpan((document.OffsetTable[index] + info.MarkerSize)..);
 
         for (int i = 0; i < info.ContainerCount; i++)
         {

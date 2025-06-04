@@ -1,5 +1,13 @@
 namespace Ametrin.Plist;
 
+/// <summary>
+/// The last 32 bytes of a binary plist
+/// </summary>
+/// <param name="OffsetIntSize">size of the int describing an objects offset in bytes</param>
+/// <param name="ObjectPointerSize">size of ints pointing to objects</param>
+/// <param name="ObjectCount">amount of objects stored in the plist</param>
+/// <param name="RootIndex">index of the root object</param>
+/// <param name="OffsetTablePosition">starting position for the offset table</param>
 public readonly record struct PlistTrailer(byte OffsetIntSize, byte ObjectPointerSize, int ObjectCount, int RootIndex, int OffsetTablePosition)
 {
     internal static PlistTrailer FromBinary(ReadOnlySpan<byte> trailer)
@@ -20,11 +28,11 @@ public readonly record struct PlistTrailer(byte OffsetIntSize, byte ObjectPointe
 
         // these limits are arbitrary guard-rails and can be loosened in the future
 
-        if (offsetIntSize > 4) throw new NotSupportedException($"This Plist uses {offsetIntSize} byte integers (limit: 4)");
-        if (objectCount > ushort.MaxValue) throw new NotSupportedException($"This Plist contains {objectCount} objects (limit {ushort.MaxValue})");
-        if (offsetTablePosition >= int.MaxValue) throw new NotSupportedException($"This Plist is too big (offsetTable start at {offsetTablePosition})");
+        if (offsetIntSize > 4) throw new NotSupportedException($"This plist uses {offsetIntSize} byte integers (limit: 4)");
+        if (objectCount > ushort.MaxValue) throw new NotSupportedException($"This plist contains {objectCount} objects (limit {ushort.MaxValue})");
+        if (offsetTablePosition >= int.MaxValue) throw new NotSupportedException($"This plist is too big (offsetTable starts at {offsetTablePosition})");
         if (rootIndex >= objectCount) throw new NotSupportedException($"rootIndex ({rootIndex}) outside of object array (Length: {objectCount})");
 
-        return new (offsetIntSize, objectRefSize, (int)objectCount, (int)rootIndex, (int)offsetTablePosition);
+        return new(offsetIntSize, objectRefSize, (int)objectCount, (int)rootIndex, (int)offsetTablePosition);
     }
 }

@@ -15,7 +15,7 @@ public readonly struct PlistDictionaryReader : IEnumerable<KeyValuePair<string, 
 
         Debug.Assert(document.Trailer.ObjectPointerSize <= 4);
 
-        var data = document.data.AsSpan((document.offsetTable[index] + info.MarkerSize)..);
+        var data = document.BinaryData.AsSpan((document.OffsetTable[index] + info.MarkerSize)..);
 
         for (int i = 0; i < info.ContainerCount; i++)
         {
