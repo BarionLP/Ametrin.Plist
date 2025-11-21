@@ -49,7 +49,7 @@ public readonly struct PlistObjectReader
         {
             4 => ReadFloatBigEndian(GetSpan(4)),
             8 => ReadDoubleBigEndian(GetSpan(8)),
-            _ => throw new InvalidOperationException($"Unsupported float size {Info.ContainerCount}"),
+            _ => throw new InvalidOperationException($"Unsupported double size {Info.ContainerCount}"),
         };
     }
 

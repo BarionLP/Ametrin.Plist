@@ -30,8 +30,11 @@ public sealed class PlistDocument
 
     public object? ParseToObject() => GetRoot().ParseToObject();
 
-    internal PlistObjectReader GetObject(int objectIndex)
+    public PlistObjectReader GetObject(int objectIndex)
     {
+        ArgumentOutOfRangeException.ThrowIfGreaterThanOrEqual(objectIndex, Trailer.ObjectCount);
+        ArgumentOutOfRangeException.ThrowIfNegative(objectIndex);
+        
         var info = GetObjectInfo(objectIndex);
         return new(this, objectIndex, info);
     }

@@ -7,7 +7,10 @@ public readonly struct PlistDictionaryReader : IEnumerable<KeyValuePair<string, 
     private readonly Dictionary<string, PlistObjectReader> _elements = [];
     public int Count => _elements.Count;
 
-    public PlistObjectReader this[string key] => _elements.TryGetValue(key, out var reader) ? reader : throw new KeyNotFoundException();
+    public PlistObjectReader this[string key] => TryGetValue(key, out var reader) ? reader : throw new KeyNotFoundException();
+
+    public bool ContainsKey(string key) => _elements.ContainsKey(key);
+    public bool TryGetValue(string key, out PlistObjectReader reader) => _elements.TryGetValue(key, out reader);
 
     internal PlistDictionaryReader(PlistDocument document, int index, PlistObjectInfo info)
     {
