@@ -1,3 +1,5 @@
+using System.Buffers.Binary;
+
 namespace Ametrin.Plist.Reader;
 
 public readonly struct PlistObjectReader
@@ -36,7 +38,7 @@ public readonly struct PlistObjectReader
 
         return Info.ContainerCount switch
         {
-            4 => ReadFloatBigEndian(GetSpan(4)),
+            4 => BinaryPrimitives.ReadSingleBigEndian(GetSpan(4)),
             _ => throw new InvalidOperationException($"Unsupported float size {Info.ContainerCount}"), 
         };
     }
@@ -47,8 +49,8 @@ public readonly struct PlistObjectReader
 
         return Info.ContainerCount switch
         {
-            4 => ReadFloatBigEndian(GetSpan(4)),
-            8 => ReadDoubleBigEndian(GetSpan(8)),
+            4 => BinaryPrimitives.ReadSingleBigEndian(GetSpan(4)),
+            8 => BinaryPrimitives.ReadDoubleBigEndian(GetSpan(8)),
             _ => throw new InvalidOperationException($"Unsupported double size {Info.ContainerCount}"),
         };
     }

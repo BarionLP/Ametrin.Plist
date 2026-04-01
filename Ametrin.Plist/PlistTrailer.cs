@@ -1,3 +1,5 @@
+using System.Buffers.Binary;
+
 namespace Ametrin.Plist;
 
 /// <summary>
@@ -22,9 +24,9 @@ public readonly record struct PlistTrailer(byte OffsetIntSize, byte ObjectPointe
         // [24‐31]: location of the offset table (uint64)
         byte offsetIntSize = trailer[6];
         byte objectRefSize = trailer[7];
-        ulong objectCount = ReadUInt64BigEndian(trailer.Slice(8, 8));
-        ulong rootIndex = ReadUInt64BigEndian(trailer.Slice(16, 8));
-        ulong offsetTablePosition = ReadUInt64BigEndian(trailer.Slice(24, 8));
+        ulong objectCount = BinaryPrimitives.ReadUInt64BigEndian(trailer.Slice(8, 8));
+        ulong rootIndex = BinaryPrimitives.ReadUInt64BigEndian(trailer.Slice(16, 8));
+        ulong offsetTablePosition = BinaryPrimitives.ReadUInt64BigEndian(trailer.Slice(24, 8));
 
         // these limits are arbitrary guard-rails and can be loosened in the future
 
